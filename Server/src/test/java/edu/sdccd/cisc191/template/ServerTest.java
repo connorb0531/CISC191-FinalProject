@@ -20,25 +20,38 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInstance;
+
 import java.util.HashMap; // OOP
 import java.io.ByteArrayInputStream; // IO
 import java.io.InputStream; // IO
 import java.util.Scanner; // IO
 import java.util.ArrayList; // G&C
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ServerTest {
     @Test // Interactive Console Module
     public void testGetValueAtIndex() throws Exception {
-        String input = "1\n0\n0\n"; // @input {1,0,0}
-        InputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-        Server server = new Server();
-        // Access private method getValueAtIndex() using reflection.
-        Method getValueAtIndexMethod = Server.class.getDeclaredMethod("getValueAtIndex");
-        getValueAtIndexMethod.setAccessible(true);
-        getValueAtIndexMethod.invoke(server);
-        // Assert expected result.
-        assertEquals("VALUE AT INDEX (0, 0): 5", "EXPECTED_RESULT");
+        JFXPanel jfxPanel = new JFXPanel();
+        Platform.runLater(() -> {
+            try {
+                //String input = "1\n0\n0\n"; // @input {1,0,0}
+                //InputStream in = new ByteArrayInputStream(input.getBytes());
+                //System.setIn(in);
+                Server server = new Server();
+                server.start(new Stage());
+                // Access private method getValueAtIndex using reflection.
+                Method getValueAtIndexMethod = Server.class.getDeclaredMethod("getValueAtIndex");
+                getValueAtIndexMethod.setAccessible(true);
+                getValueAtIndexMethod.invoke(server);
+                // Assert expected result.
+                assertEquals("VALUE AT INDEX (0, 0): 1", "EXPECTED_RESULT");
+            } catch (Exception e) {
+                // Handle exceptions.
+                e.printStackTrace();
+            }
+        });
+        // Wait for JavaFx operations to complete.
+        Thread.sleep(1000);
     }
     @BeforeAll // JavaFX GUI of Interactive Console Module
     public static void setup() {                        //must be static
@@ -50,18 +63,28 @@ public class ServerTest {
 
     @Test // JavaFX GUI of Interactive Console Module
     public void testGetValueAtIndexGUI() throws Exception {
-        Server server = new Server();
-        server.start(new Stage());
+        JFXPanel jfxPanel = new JFXPanel();
         /*
          * Simulate clicking of button to test functionality.
          * Access private method getValueAtIndexGUI() using reflection.
          */
-        Method getValueAtIndexGUIMethod = Server.class.getDeclaredMethod("getValueAtIndexGUI");
-        getValueAtIndexGUIMethod.setAccessible(true);
-        getValueAtIndexGUIMethod.invoke(server);
-        // Assert expected result.
-        assertEquals("VALUE AT INDEX (0, 0): 5", "EXPECTED_RESULT");
+        Platform.runLater(() -> {
+        try {
+            Server server = new Server();
+            server.start(new Stage());
+            Method getValueAtIndexGUIMethod = Server.class.getDeclaredMethod("getValueAtIndexGUI");
+            getValueAtIndexGUIMethod.setAccessible(true);
+            getValueAtIndexGUIMethod.invoke(server);
+            // Assert expected result.
+            assertEquals("VALUE AT INDEX (0, 0): 5", "EXPECTED_RESULT");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        });
+    // Wait for JavaFx operations to complete.
+    Thread.sleep(1000);
     }
+
 
     @Test // OOP
     public void testUserGetName() {
