@@ -430,16 +430,16 @@ public class Server extends Application {
  * Implementing networking would involve creating a separate class for the server and client,
  * establishing a network connection, and exchanging data between them using sockets and input/output streams.
  */
-//    class User implements Serializable // NOT NECESSARY ??
-//    {
-//        private String name;
-//        public User(String name)
-//        {
-//            this.name = name;
-//        }
-//        public String getName() {
-//            return name;
-//        }
-//    }
+    class User implements Serializable // NOT NECESSARY ??
+    {
+        private String name;
+        public User(String name)
+        {
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+    }
 
 
