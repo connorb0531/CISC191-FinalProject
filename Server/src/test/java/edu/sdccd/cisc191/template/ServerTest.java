@@ -41,7 +41,7 @@ public class ServerTest {
         assertEquals("VALUE AT INDEX (0, 0): 5", "EXPECTED_RESULT");
     }
     @BeforeAll // JavaFX GUI of Interactive Console Module
-    public void setup() {
+    public static void setup() {                        //must be static
         // Initialize JavaFX toolkit.
         JFXPanel panel = new JFXPanel();
         Platform.runLater(() -> {
