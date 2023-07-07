@@ -16,12 +16,10 @@ import javafx.stage.Stage; // GUI
 import java.io.*; // ByteArrayInputStream, inputStream
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
-
 import java.util.HashMap; // OOP
 import java.io.ByteArrayInputStream; // IO
 import java.io.InputStream; // IO
