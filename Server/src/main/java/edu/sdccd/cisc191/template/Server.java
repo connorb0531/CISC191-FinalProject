@@ -73,25 +73,25 @@ public class Server extends Application {
 
     // Case 1. Get value at specified index in 2D array.
     private void getValueAtIndex() {
-        System.out.print("Enter Row Index: ");
+        System.out.print("ENTER ROW INDEX");
         int row = scanner.nextInt();
-        System.out.print("Enter Column Index: ");
+        System.out.print("ENTER COLUMN INDEX");
         int col = scanner.nextInt();
         if (isValidIndex(row, col)) {
             int value = twoDimArray[row][col];
-            System.out.println("Value At Index (" + row + ", " + col + "): " + value);
+            System.out.println("VALUE AT SET INDEX (" + row + ", " + col + "): " + value);
         } else {
-            System.out.println("Invalid Input. Please Try Again.");
+            System.out.println("INVALID INPUT. PLEASE TRY AGAIN.");
         }
     }
 
     // Case 2. Set value at specified index in 2D array.
     private void setValueAtIndex() {
-        System.out.print("ENTER ROW INDEX ");
+        System.out.print("ENTER ROW INDEX");
         int row = scanner.nextInt();
-        System.out.print("ENTER COLUMN INDEX: ");
+        System.out.print("ENTER COLUMN INDEX");
         int col = scanner.nextInt();
-        System.out.print("ENTER VALUE: ");
+        System.out.print("ENTER VALUE");
         int value = scanner.nextInt();
         if (isValidIndex(row, col)) {
             twoDimArray[row][col] = value;
@@ -103,7 +103,7 @@ public class Server extends Application {
 
     // Case 3. Find index of specified value in 2D array.
     private void findIndexOfValue() {
-        System.out.print("ENTER VALUE IN SEARCH OF ");
+        System.out.print("ENTER VALUE IN SEARCH OF");
         int value = scanner.nextInt();
         boolean found = false;
         for (int row = 0; row < twoDimArray.length; row++) {
@@ -132,9 +132,9 @@ public class Server extends Application {
 
     // Case 5. Deletes value at speified index in 2D array.
     private void deleteValueAtIndex() {
-        System.out.print("ENTER ROW INDEX: ");
+        System.out.print("ENTER ROW INDEX");
         int row = scanner.nextInt();
-        System.out.print("ENTER COLUMN INDEX: ");
+        System.out.print("ENTER COLUMN INDEX");
         int col = scanner.nextInt();
         if (isValidIndex(row, col)) {
             twoDimArray[row][col] = 0;
@@ -181,13 +181,13 @@ public class Server extends Application {
         /*
          * Without GUI nor networking implementations.
          * Server server = new Server();
-        server.printConsoleMenu();
-        while (true)
-        {
-            System.out.print("Enter your choice: ");
-            int choice = server.scanner.nextInt();
-            server.handleConsoleInput(choice);
-        }
+         * server.printConsoleMenu();
+         * while (true)
+           {
+                System.out.print("Enter your choice: ");
+                int choice = server.scanner.nextInt();
+                server.handleConsoleInput(choice);
+            }
          */
         launch(args);
     }
@@ -195,7 +195,7 @@ public class Server extends Application {
     // Java FX GUI implementation. Module 2.
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Index & Array Console Menu");
+        primaryStage.setTitle("CONSOLE MENU");
         VBox vbox = new VBox();
         vbox.setSpacing(10);
         vbox.setPadding(new Insets(30));
@@ -207,43 +207,43 @@ public class Server extends Application {
         vbox.getChildren().add(titleLabel);
         vbox.setAlignment(Pos.TOP_CENTER);
 
-        Button getValueBtn = new Button("Get Value At Index");
+        Button getValueBtn = new Button("GET VALUE AT INDEX");
         getValueBtn.setOnAction(e -> getValueAtIndexGUI());
         vbox.getChildren().add(getValueBtn);
         getValueBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
                 "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
 
-        Button setValueBtn = new Button("Set Value At Index");
+        Button setValueBtn = new Button("SET VALUE AT INDEX");
         setValueBtn.setOnAction(e -> setValueAtIndexGUI());
         vbox.getChildren().add(setValueBtn);
         setValueBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
                 "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
 
-        Button findIndexBtn = new Button("Find Value At Index");
+        Button findIndexBtn = new Button("FIND VALUE AT INDEX");
         findIndexBtn.setOnAction(e -> findIndexOfValueGUI());
         vbox.getChildren().add(findIndexBtn);
         findIndexBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
                 "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
 
-        Button printAllBtn = new Button("Print All Values");
+        Button printAllBtn = new Button("PRINT ALL VALUES");
         printAllBtn.setOnAction(e -> printAllValuesGUI());
         vbox.getChildren().add(printAllBtn);
         printAllBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
                 "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
 
-        Button deleteValueBtn = new Button("Delete Value At Index");
+        Button deleteValueBtn = new Button("DELETE VALUE AT INDEX");
         deleteValueBtn.setOnAction(e -> deleteValueAtIndexGUI());
         vbox.getChildren().add(deleteValueBtn);
         deleteValueBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
                 "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
 
-        Button expandArrayBtn = new Button("Expand Array");
+        Button expandArrayBtn = new Button("EXPAND ARRAY");
         expandArrayBtn.setOnAction(e -> expandArrayGUI());
         vbox.getChildren().add(expandArrayBtn);
         expandArrayBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
                 "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
 
-        Button shrinkArrayBtn = new Button("Shrink Array");
+        Button shrinkArrayBtn = new Button("SHRINK ARRAY");
         shrinkArrayBtn.setOnAction(e -> shrinkArrayGUI());
         vbox.getChildren().add(shrinkArrayBtn);
         shrinkArrayBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
@@ -258,21 +258,21 @@ public class Server extends Application {
     // JavaFx method to get value at specified index.
     private void getValueAtIndexGUI() {
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Get Value");
-        dialog.setHeaderText("Enter Indexes");
-        dialog.setContentText("Row: ");
+        dialog.setTitle("GET VALUE");
+        dialog.setHeaderText("ENTER INDEXES");
+        dialog.setContentText("ROW:");
         Optional<String> rowResult = dialog.showAndWait();
         if (rowResult.isPresent()) {
-            dialog.setContentText("Column: ");
+            dialog.setContentText("COLUMN:");
             Optional<String> colResult = dialog.showAndWait();
             if (colResult.isPresent()) {
                 int row = Integer.parseInt(rowResult.get());
                 int col = Integer.parseInt(colResult.get());
                 if (isValidIndex(row, col)) {
                     int value = twoDimArray[row][col];
-                    showAlert("Value At Index (" + row + ", " + col + "): " + value);
+                    showAlert("VALUE AT INDEX (" + row + ", " + col + "): " + value);
                 } else {
-                    showAlert("Invalid Input. Try Again.");
+                    showAlert("INVALID INPUT. TRY AGAIN.");
                 }
             }
         }
@@ -283,13 +283,13 @@ public class Server extends Application {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("SET VALUE");
         dialog.setHeaderText("ENTER INDEX");
-        dialog.setContentText("ROW: ");
+        dialog.setContentText("ROW:");
         Optional<String> rowResult = dialog.showAndWait();
         if (rowResult.isPresent()) {
-            dialog.setContentText("COLUMN: ");
+            dialog.setContentText("COLUMN:");
             Optional<String> colResult = dialog.showAndWait();
             if (colResult.isPresent()) {
-                dialog.setContentText("Enter value:");
+                dialog.setContentText("ENTER VALUE");
                 Optional<String> valueResult = dialog.showAndWait();
                 if (valueResult.isPresent()) {
                     int row = Integer.parseInt(rowResult.get());
@@ -305,31 +305,30 @@ public class Server extends Application {
             }
         }
     }
-        // JavaFX method to find index of specified value.
-        private void findIndexOfValueGUI() {
-            TextInputDialog dialog = new TextInputDialog();
-            dialog.setTitle("FIND INDEX");
-            dialog.setHeaderText("ENTER VALUE TO FIND");
-            dialog.setContentText("VALUE: ");
-            Optional<String> valueResult = dialog.showAndWait();
-            if (valueResult.isPresent()) {
-                int value = Integer.parseInt(valueResult.get());
-                boolean found = false;
-                for (int row = 0; row < twoDimArray.length; row++) {
-                    for (int col = 0; col < twoDimArray[row].length; col++) {
-                        if (twoDimArray[row][col] == value) {
-                            showAlert("VALUE " + value + " FOUND AT INDEX (" + row + ", " + col + ").");
-                            found = true;
-                        }
+
+    // JavaFX method to find index of specified value.
+    private void findIndexOfValueGUI() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("FIND INDEX");
+        dialog.setHeaderText("ENTER VALUE TO FIND");
+        dialog.setContentText("VALUE:");
+        Optional<String> valueResult = dialog.showAndWait();
+        if (valueResult.isPresent()) {
+            int value = Integer.parseInt(valueResult.get());
+            boolean found = false;
+            for (int row = 0; row < twoDimArray.length; row++) {
+                for (int col = 0; col < twoDimArray[row].length; col++) {
+                    if (twoDimArray[row][col] == value) {
+                        showAlert("VALUE " + value + " FOUND AT INDEX (" + row + ", " + col + ").");
+                        found = true;
                     }
                 }
-                if (!found) {
-                    showAlert("VALUE NOT FOUND");
-                }
+            }
+            if (!found) {
+                showAlert("VALUE NOT FOUND");
             }
         }
-
-
+    }
 
     // JavaFX method to print all values in 2D array.
     private void printAllValuesGUI() 
@@ -346,6 +345,7 @@ public class Server extends Application {
         }
         showAlert(sb.toString());
     }
+
     // JavaFX method to delete value at specified index.
     private void deleteValueAtIndexGUI() 
     {
@@ -374,6 +374,7 @@ public class Server extends Application {
             }
         }
     }
+
     // JavaFX method to expand size of 2D array.
     private void expandArrayGUI() 
     {
@@ -388,6 +389,7 @@ public class Server extends Application {
         twoDimArray = newArray;
         showAlert("ARRAY EXPANDED");
     }
+
     // JavaFX method to shrink size of 2D array.
     private void shrinkArrayGUI() 
     {
@@ -409,15 +411,16 @@ public class Server extends Application {
             showAlert("ARRAY CANNOT BE FURTHER SHRUNK");
         }
     }
+
     // Method to show alert or warning with given message.
-        private void showAlert(String message)
-        {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("ALERT");
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
-        }
+    private void showAlert(String message)
+    {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("ALERT");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }
 /*
  * Includes the implementation of a JavaFX GUI menu using buttons and dialog boxes for user input and displaying messages.

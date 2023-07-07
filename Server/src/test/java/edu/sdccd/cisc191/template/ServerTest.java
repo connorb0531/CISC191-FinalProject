@@ -53,6 +53,7 @@ public class ServerTest {
         // Wait for JavaFx operations to complete.
         Thread.sleep(1000);
     }
+
     @BeforeAll // JavaFX GUI of Interactive Console Module
     public static void setup() {                        //must be static
         // Initialize JavaFX toolkit.
@@ -84,7 +85,6 @@ public class ServerTest {
     // Wait for JavaFx operations to complete.
     Thread.sleep(1000);
     }
-
 
     @Test // OOP
     public void testUserGetName() {
