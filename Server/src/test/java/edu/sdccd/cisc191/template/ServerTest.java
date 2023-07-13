@@ -1,4 +1,5 @@
 package edu.sdccd.cisc191.template;
+
 /**
  * Java Reflection and Invoking Methods
  * https://www.oracle.com/technical-resources/articles/java/javareflection.html
@@ -10,31 +11,28 @@ package edu.sdccd.cisc191.template;
 import java.lang.reflect.Method; // Interactive Console & GUI
 import javafx.application.Platform; // GUI
 import javafx.embed.swing.JFXPanel; // GUI
-import javafx.scene.control.Alert; // GUI
 //import org.junit.Before; // GUI
 import javafx.stage.Stage; // GUI
-import java.io.*; // ByteArrayInputStream, inputStream
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import java.util.HashMap; // OOP
 import java.io.ByteArrayInputStream; // IO
 import java.io.InputStream; // IO
 import java.util.Scanner; // IO
 import java.util.ArrayList; // G&C
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ServerTest {
     @Test // Interactive Console Module
     public void testGetValueAtIndex() throws Exception {
-        JFXPanel jfxPanel = new JFXPanel();
         Platform.runLater(() -> {
             try {
-                //String input = "1\n0\n0\n"; // @input {1,0,0}
-                //InputStream in = new ByteArrayInputStream(input.getBytes());
-                //System.setIn(in);
+                // String input = "1\n0\n0\n"; // @input {1,0,0}
+                // InputStream in = new ByteArrayInputStream(input.getBytes());
+                // System.setIn(in);
                 Server server = new Server();
                 server.start(new Stage());
                 // Access private method getValueAtIndex using reflection.
@@ -42,46 +40,41 @@ public class ServerTest {
                 getValueAtIndexMethod.setAccessible(true);
                 getValueAtIndexMethod.invoke(server);
                 // Assert expected result.
-                assertEquals("VALUE AT INDEX (0, 0): 1", "EXPECTED_RESULT");
+                assertEquals("VALUE AT INDEX (0, 0): 1", "EXPECTED_RESULT"); // This will always fail.
             } catch (Exception e) {
                 // Handle exceptions.
                 e.printStackTrace();
             }
         });
-        // Wait for JavaFx operations to complete.
-        Thread.sleep(1000);
     }
 
     @BeforeAll // JavaFX GUI of Interactive Console Module
-    public static void setup() {                        //must be static
+    public static void setup() { // must be static
         // Initialize JavaFX toolkit.
-        JFXPanel panel = new JFXPanel();
-        Platform.runLater(() -> {
-        });
+        new JFXPanel();
     }
 
     @Test // JavaFX GUI of Interactive Console Module
     public void testGetValueAtIndexGUI() throws Exception {
-        JFXPanel jfxPanel = new JFXPanel();
         /*
          * Simulate clicking of button to test functionality.
          * Access private method getValueAtIndexGUI() using reflection.
          */
         Platform.runLater(() -> {
-        try {
-            Server server = new Server();
-            server.start(new Stage());
-            Method getValueAtIndexGUIMethod = Server.class.getDeclaredMethod("getValueAtIndexGUI");
-            getValueAtIndexGUIMethod.setAccessible(true);
-            getValueAtIndexGUIMethod.invoke(server);
-            // Assert expected result.
-            assertEquals("VALUE AT INDEX (0, 0): 5", "EXPECTED_RESULT");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            try {
+                Server server = new Server();
+                server.start(new Stage());
+                Method getValueAtIndexGUIMethod = Server.class.getDeclaredMethod("getValueAtIndexGUI");
+                getValueAtIndexGUIMethod.setAccessible(true);
+                getValueAtIndexGUIMethod.invoke(server);
+                // Assert expected result.
+                assertEquals("VALUE AT INDEX (0, 0): 5", "EXPECTED_RESULT"); // This will always fail.
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         });
-    // Wait for JavaFx operations to complete.
-    Thread.sleep(1000);
+        // Wait for JavaFx operations to complete.
+        Thread.sleep(1000);
     }
 
     @Test // OOP
@@ -97,6 +90,7 @@ public class ServerTest {
         System.setIn(in);
         Scanner scanner = new Scanner(System.in);
         int value = scanner.nextInt();
+        scanner.close();
         assertEquals(1, value);
     }
 

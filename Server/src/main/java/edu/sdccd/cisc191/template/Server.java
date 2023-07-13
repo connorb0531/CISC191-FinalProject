@@ -8,19 +8,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
 import java.io.*;
-import java.net.*; // ServerSocket, Socket
 import java.util.*; //ArrayList, HashMap, Scanner, Optional
 
 public class Server extends Application {
-    private HashMap<String, User> userMap;
-    private ArrayList<User> userList;
     private int[][] twoDimArray;
     private Scanner scanner;
 
     // Constructor and initialization of variables.
     public Server() {
-        userMap = new HashMap<>();
-        userList = new ArrayList<>();
         twoDimArray = new int[10][10];
         scanner = new Scanner(System.in);
     }
@@ -48,7 +43,7 @@ public class Server extends Application {
                 setValueAtIndex();
                 break;
             case 3:
-                findIndexOfValue();
+                findIndicesOfValue();
                 break;
             case 4:
                 printAllValues();
@@ -101,8 +96,8 @@ public class Server extends Application {
         }
     }
 
-    // Case 3. Find index of specified value in 2D array.
-    private void findIndexOfValue() {
+    // Case 3. Find the indices of specified value in 2D array.
+    private void findIndicesOfValue() {
         System.out.print("ENTER VALUE IN SEARCH OF");
         int value = scanner.nextInt();
         boolean found = false;
@@ -183,11 +178,11 @@ public class Server extends Application {
          * Server server = new Server();
          * server.printConsoleMenu();
          * while (true)
-           {
-                System.out.print("Enter your choice: ");
-                int choice = server.scanner.nextInt();
-                server.handleConsoleInput(choice);
-            }
+         * {
+         * System.out.print("Enter your choice: ");
+         * int choice = server.scanner.nextInt();
+         * server.handleConsoleInput(choice);
+         * }
          */
         launch(args);
     }
@@ -331,14 +326,11 @@ public class Server extends Application {
     }
 
     // JavaFX method to print all values in 2D array.
-    private void printAllValuesGUI() 
-    {
+    private void printAllValuesGUI() {
         StringBuilder sb = new StringBuilder();
         sb.append("ARRAY VALUES \n");
-        for (int row = 0; row < twoDimArray.length; row++) 
-        {
-            for (int col = 0; col < twoDimArray[row].length; col++) 
-            {
+        for (int row = 0; row < twoDimArray.length; row++) {
+            for (int col = 0; col < twoDimArray[row].length; col++) {
                 sb.append(twoDimArray[row][col]).append(" ");
             }
             sb.append("\n");
@@ -347,28 +339,22 @@ public class Server extends Application {
     }
 
     // JavaFX method to delete value at specified index.
-    private void deleteValueAtIndexGUI() 
-    {
+    private void deleteValueAtIndexGUI() {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("DELETE VALUE");
         dialog.setHeaderText("ENTER INDEX");
         dialog.setContentText("ROW: ");
         Optional<String> rowResult = dialog.showAndWait();
-        if (rowResult.isPresent()) 
-        {
+        if (rowResult.isPresent()) {
             dialog.setContentText("COLUMN: ");
             Optional<String> colResult = dialog.showAndWait();
-            if (colResult.isPresent()) 
-            {
+            if (colResult.isPresent()) {
                 int row = Integer.parseInt(rowResult.get());
                 int col = Integer.parseInt(colResult.get());
-                if (isValidIndex(row, col)) 
-                {
+                if (isValidIndex(row, col)) {
                     twoDimArray[row][col] = 0;
                     showAlert("VALUE DELETED AT INDEX (" + row + ", " + col + ").");
-                } 
-                else 
-                {
+                } else {
                     showAlert("INVALID INPUT. TRY AGAIN.");
                 }
             }
@@ -376,13 +362,10 @@ public class Server extends Application {
     }
 
     // JavaFX method to expand size of 2D array.
-    private void expandArrayGUI() 
-    {
+    private void expandArrayGUI() {
         int[][] newArray = new int[twoDimArray.length + 1][twoDimArray[0].length + 1];
-        for (int row = 0; row < twoDimArray.length; row++) 
-        {
-            for (int col = 0; col < twoDimArray[row].length; col++) 
-            {
+        for (int row = 0; row < twoDimArray.length; row++) {
+            for (int col = 0; col < twoDimArray[row].length; col++) {
                 newArray[row][col] = twoDimArray[row][col];
             }
         }
@@ -391,30 +374,23 @@ public class Server extends Application {
     }
 
     // JavaFX method to shrink size of 2D array.
-    private void shrinkArrayGUI() 
-    {
-        if (twoDimArray.length > 1 && twoDimArray[0].length > 1) 
-        {
+    private void shrinkArrayGUI() {
+        if (twoDimArray.length > 1 && twoDimArray[0].length > 1) {
             int[][] newArray = new int[twoDimArray.length - 1][twoDimArray[0].length - 1];
-            for (int row = 0; row < newArray.length; row++) 
-            {
-                for (int col = 0; col < newArray[row].length; col++) 
-                {
+            for (int row = 0; row < newArray.length; row++) {
+                for (int col = 0; col < newArray[row].length; col++) {
                     newArray[row][col] = twoDimArray[row][col];
                 }
             }
             twoDimArray = newArray;
             showAlert("ARRAY SHRUNK");
-        } 
-        else 
-        {
+        } else {
             showAlert("ARRAY CANNOT BE FURTHER SHRUNK");
         }
     }
 
     // Method to show alert or warning with given message.
-    private void showAlert(String message)
-    {
+    private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("ALERT");
         alert.setHeaderText(null);
@@ -422,24 +398,28 @@ public class Server extends Application {
         alert.showAndWait();
     }
 }
+
 /*
- * Includes the implementation of a JavaFX GUI menu using buttons and dialog boxes for user input and displaying messages.
- * Methods getValueAtIndexGUI(), setValueAtIndexGUI(), findIndexOfValueGUI(), printAllValuesGUI(), deleteValueAtIndexGUI(), expandArrayGUI(), and shrinkArrayGUI()
+ * Includes the implementation of a JavaFX GUI menu using buttons and dialog
+ * boxes for user input and displaying messages.
+ * Methods getValueAtIndexGUI(), setValueAtIndexGUI(), findIndexOfValueGUI(),
+ * printAllValuesGUI(), deleteValueAtIndexGUI(), expandArrayGUI(), and
+ * shrinkArrayGUI()
  * used to handle the corresponding actions in the GUI interface.
  * Networking functionality is not implemented in this code.
- * Implementing networking would involve creating a separate class for the server and client,
- * establishing a network connection, and exchanging data between them using sockets and input/output streams.
+ * Implementing networking would involve creating a separate class for the
+ * server and client,
+ * establishing a network connection, and exchanging data between them using
+ * sockets and input/output streams.
  */
-    class User implements Serializable
-    {
-        private String name;
-        public User(String name)
-        {
-            this.name = name;
-        }
-        public String getName() {
-            return name;
-        }
+class User implements Serializable {
+    private String name;
+
+    public User(String name) {
+        this.name = name;
     }
 
-
+    public String getName() {
+        return name;
+    }
+}
