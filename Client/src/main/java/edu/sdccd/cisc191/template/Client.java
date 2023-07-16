@@ -4,7 +4,7 @@ import java.net.*;
 import java.io.*;
 
 /**
- * This program opens a connection to a computer specified
+ * test This program opens a connection to a computer specified
  * as the first command-line argument.  If no command-line
  * argument is given, it prompts the user for a computer
  * to connect to.  The connection is made to
