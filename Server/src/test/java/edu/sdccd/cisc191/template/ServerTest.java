@@ -11,9 +11,7 @@ package edu.sdccd.cisc191.template;
 import java.lang.reflect.Method; // Interactive Console & GUI
 import javafx.application.Platform; // GUI
 import javafx.embed.swing.JFXPanel; // GUI
-//import org.junit.Before; // GUI
 import javafx.stage.Stage; // GUI
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -79,8 +77,8 @@ public class ServerTest {
 
     @Test // OOP
     public void testUserGetName() {
-        User user = new User("USER1");
-        assertEquals("USER1", user.getName());
+        User user = new User("TIMMY", null);
+        assertEquals("TIMMY", user.getName());
     }
 
     @Test // IO

@@ -4,15 +4,20 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*; // Alert, Button, Label, TextInputDialog
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.geometry.Pos;
-import java.io.*;
 import java.util.*; //ArrayList, HashMap, Scanner, Optional
 
 public class Server extends Application {
     private int[][] twoDimArray;
-    private Scanner scanner;
+    private final Scanner scanner;
+    private User user;
+    private Stage primaryStage;
 
     // Constructor and initialization of variables.
     public Server() {
@@ -172,84 +177,6 @@ public class Server extends Application {
         return row >= 0 && row < twoDimArray.length && col >= 0 && col < twoDimArray[row].length;
     }
 
-    public static void main(String[] args) {
-        /*
-         * Without GUI nor networking implementations.
-         * Server server = new Server();
-         * server.printConsoleMenu();
-         * while (true)
-         * {
-         * System.out.print("Enter your choice: ");
-         * int choice = server.scanner.nextInt();
-         * server.handleConsoleInput(choice);
-         * }
-         */
-        launch(args);
-    }
-
-    // Java FX GUI implementation. Module 2.
-    @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("CONSOLE MENU");
-        VBox vbox = new VBox();
-        vbox.setSpacing(10);
-        vbox.setPadding(new Insets(30));
-        vbox.setAlignment(Pos.CENTER);
-        vbox.setStyle("-fx-background-color: #D3BDA2");
-
-        Label titleLabel = new Label("CONSOLE MENU");
-        titleLabel.setStyle("-fx-font: 100px Impact; -fx-font-size: 100px; -fx-font-weight: bold;");
-        vbox.getChildren().add(titleLabel);
-        vbox.setAlignment(Pos.TOP_CENTER);
-
-        Button getValueBtn = new Button("GET VALUE AT INDEX");
-        getValueBtn.setOnAction(e -> getValueAtIndexGUI());
-        vbox.getChildren().add(getValueBtn);
-        getValueBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
-                "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
-
-        Button setValueBtn = new Button("SET VALUE AT INDEX");
-        setValueBtn.setOnAction(e -> setValueAtIndexGUI());
-        vbox.getChildren().add(setValueBtn);
-        setValueBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
-                "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
-
-        Button findIndexBtn = new Button("FIND VALUE AT INDEX");
-        findIndexBtn.setOnAction(e -> findIndexOfValueGUI());
-        vbox.getChildren().add(findIndexBtn);
-        findIndexBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
-                "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
-
-        Button printAllBtn = new Button("PRINT ALL VALUES");
-        printAllBtn.setOnAction(e -> printAllValuesGUI());
-        vbox.getChildren().add(printAllBtn);
-        printAllBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
-                "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
-
-        Button deleteValueBtn = new Button("DELETE VALUE AT INDEX");
-        deleteValueBtn.setOnAction(e -> deleteValueAtIndexGUI());
-        vbox.getChildren().add(deleteValueBtn);
-        deleteValueBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
-                "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
-
-        Button expandArrayBtn = new Button("EXPAND ARRAY");
-        expandArrayBtn.setOnAction(e -> expandArrayGUI());
-        vbox.getChildren().add(expandArrayBtn);
-        expandArrayBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
-                "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
-
-        Button shrinkArrayBtn = new Button("SHRINK ARRAY");
-        shrinkArrayBtn.setOnAction(e -> shrinkArrayGUI());
-        vbox.getChildren().add(shrinkArrayBtn);
-        shrinkArrayBtn.setStyle("-fx-padding: 10px; -fx-border-color: black; -fx-border-width: 2px; " +
-                "-fx-background-color: #7EA3AC; -fx-text-fill: black;-fx-font: 30px Impact;");
-
-        Scene scene = new Scene(vbox, 1600, 900);
-        primaryStage.setScene(scene);
-        primaryStage.show();
-
-    }
-
     // JavaFx method to get value at specified index.
     private void getValueAtIndexGUI() {
         TextInputDialog dialog = new TextInputDialog();
@@ -397,29 +324,120 @@ public class Server extends Application {
         alert.setContentText(message);
         alert.showAndWait();
     }
-}
 
-/*
- * Includes the implementation of a JavaFX GUI menu using buttons and dialog
- * boxes for user input and displaying messages.
- * Methods getValueAtIndexGUI(), setValueAtIndexGUI(), findIndexOfValueGUI(),
- * printAllValuesGUI(), deleteValueAtIndexGUI(), expandArrayGUI(), and
- * shrinkArrayGUI()
- * used to handle the corresponding actions in the GUI interface.
- * Networking functionality is not implemented in this code.
- * Implementing networking would involve creating a separate class for the
- * server and client,
- * establishing a network connection, and exchanging data between them using
- * sockets and input/output streams.
- */
-class User implements Serializable {
-    private String name;
+    private void saveUserPopUp() {
+        // Popup stage set up
+        Stage saveUserStage = new Stage();
+        saveUserStage.initModality(Modality.APPLICATION_MODAL);
+        saveUserStage.initOwner(primaryStage);
+        saveUserStage.setTitle("Add Task");
+        saveUserStage.setResizable(false);
 
-    public User(String name) {
-        this.name = name;
+        Label userNameLabel = new Label("Name:");
+        TextField userNameTextField = new TextField();
+
+        // Saves user's name and array into user object
+        Button saveButton = new Button("Save");
+        saveButton.setOnAction(event -> {
+            String userName = userNameTextField.getText();
+            if (!userName.isEmpty()) {
+                user = new User(userName, twoDimArray);
+                UserSave.saveUser(user, "user.ser"); // saves user object to file
+                saveUserStage.close();
+            }
+        });
+
+        VBox saveUserRoot = new VBox(20, userNameLabel, userNameTextField, saveButton);
+        Scene saveUserScene = new Scene(saveUserRoot, 250, 200);
+        saveUserStage.setScene(saveUserScene);
+        saveUserStage.show();
     }
 
-    public String getName() {
-        return name;
+    // Java FX GUI implementation. Module 2.
+    @Override
+    public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+
+        // Scene main title
+        Label titleLabel = new Label("CONSOLE MENU");
+        titleLabel.setStyle("-fx-font: 100px Impact; -fx-font-size: 100px; -fx-font-weight: bold;");
+        VBox titleLabelContainer = new VBox(titleLabel);
+        titleLabelContainer.setAlignment(Pos.TOP_CENTER);
+
+        // Button setup __________________
+        //                                |
+        //                                |
+        //                                V
+
+        CustomButton getValueButton = new CustomButton("GET VALUE AT INDEX");
+        getValueButton.setOnAction(e -> getValueAtIndexGUI());
+
+        CustomButton setValueButton = new CustomButton("SET VALUE AT INDEX");
+        setValueButton.setOnAction(e -> setValueAtIndexGUI());
+
+        CustomButton findIndexButton = new CustomButton("FIND VALUE AT INDEX");
+        findIndexButton.setOnAction(e -> findIndexOfValueGUI());
+
+        CustomButton printAllButton = new CustomButton("PRINT ALL VALUES");
+        printAllButton.setOnAction(e -> printAllValuesGUI());
+
+        CustomButton deleteValueButton = new CustomButton("DELETE VALUE AT INDEX");
+        deleteValueButton.setOnAction(e -> deleteValueAtIndexGUI());
+
+        CustomButton expandArrayButton = new CustomButton("EXPAND ARRAY");
+        expandArrayButton.setOnAction(e -> expandArrayGUI());
+
+        CustomButton shrinkArrayButton = new CustomButton("SHRINK ARRAY");
+        shrinkArrayButton.setOnAction(e -> shrinkArrayGUI());
+
+        // Main Buttons container
+        VBox buttonContainer = new VBox(getValueButton, setValueButton, findIndexButton, printAllButton,
+                deleteValueButton, expandArrayButton, shrinkArrayButton);
+        buttonContainer.setAlignment(Pos.CENTER);
+        buttonContainer.setSpacing(10);
+        buttonContainer.setPadding(new Insets(30));
+
+        // Save user button setup
+        CustomButton saveUserButton = new CustomButton("SAVE USER DATA");
+        saveUserButton.setOnAction(event -> saveUserPopUp());
+
+        // Save button container setup
+        HBox saveUserButtonContainer = new HBox(saveUserButton);
+        saveUserButtonContainer.setAlignment(Pos.BOTTOM_RIGHT);
+        saveUserButtonContainer.setPadding(new Insets(10));
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+
+        // sets user object to loaded (if any) object from file
+        user = UserSave.loadUser("user.ser");
+        System.out.println(user);
+
+        //Scene root setup
+        //holds control containers (title label & buttons)
+        VBox sceneRoot = new VBox(titleLabelContainer, buttonContainer, spacer, saveUserButtonContainer);
+        sceneRoot.setStyle("-fx-background-color: #D3BDA2");
+
+        // Stage & scene setup
+        Scene scene = new Scene(sceneRoot, 1600, 900);
+        primaryStage.setTitle("CONSOLE MENU");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    public static void main(String[] args) {
+        /*
+         * Without GUI nor networking implementations.
+         * Server server = new Server();
+         * server.printConsoleMenu();
+         * while (true)
+         * {
+         * System.out.print("Enter your choice: ");
+         * int choice = server.scanner.nextInt();
+         * server.handleConsoleInput(choice);
+         * }
+         */
+        launch(args);
     }
 }
+
+
