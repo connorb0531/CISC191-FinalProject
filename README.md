@@ -14,4 +14,9 @@ Shared classes between client and server modules.
 ## Server Module
 The server application that handles multiple clients.
 ## Client Module
-The client application used to connect to the server.
+The client application used to connect to the server (not used).
+## Objectives
+1. Display JavaFX GUI of tasks
+2. Divide and conquer code into separate classes
+3. Save and load data via serialization
+4. Uses collections to store data
