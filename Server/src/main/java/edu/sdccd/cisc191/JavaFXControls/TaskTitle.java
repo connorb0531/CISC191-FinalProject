@@ -1,4 +1,4 @@
-package edu.sdccd.cisc191;
+package edu.sdccd.cisc191.JavaFXControls;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;

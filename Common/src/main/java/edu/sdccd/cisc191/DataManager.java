@@ -46,6 +46,9 @@ public class DataManager {
             fileInputStream.close();
             System.out.println("Objects loaded.");
             return loadedObjects;
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + e.getMessage());
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

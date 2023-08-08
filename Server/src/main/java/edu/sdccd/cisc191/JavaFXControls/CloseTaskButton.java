@@ -1,4 +1,4 @@
-package edu.sdccd.cisc191;
+package edu.sdccd.cisc191.JavaFXControls;
 
 import javafx.scene.image.Image;
 import javafx.scene.control.Button;
@@ -11,7 +11,7 @@ import java.util.Objects;
  * The CloseTaskButton class extends the `Button` class from JavaFX to represent a customized button for closing tasks.
  * It provides a button with an image, specific styles, and a tooltip for deleting a task.
  */
-class CloseTaskButton extends Button {
+public class CloseTaskButton extends Button {
 
     /**
      * Constructs a `CloseTaskButton` object.

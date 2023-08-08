@@ -1,4 +1,4 @@
-package edu.sdccd.cisc191;
+package edu.sdccd.cisc191.JavaFXControls;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;

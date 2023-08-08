@@ -1,5 +1,9 @@
 package edu.sdccd.cisc191;
 
+import edu.sdccd.cisc191.JavaFXControls.AddButton;
+import edu.sdccd.cisc191.JavaFXControls.CloseTaskButton;
+import edu.sdccd.cisc191.JavaFXControls.TaskLabel;
+import edu.sdccd.cisc191.JavaFXControls.TaskTitle;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -15,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class WindowView extends Application {
+public class Main extends Application {
 
     // Global variables for uses in multiple methods
     private Stage stage;
@@ -62,6 +66,8 @@ public class WindowView extends Application {
         // Labels in top part of scene
         taskTitle = new TaskTitle("No Tasks");
         TextField searchTextField = new TextField();
+        searchTextField.setFocusTraversable(false);
+        searchTextField.setStyle("-fx-focus-color: e3c502");
         searchTextField.setPromptText("Search by task name");
         searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
             filterTaskByName(newValue);
@@ -117,26 +123,32 @@ public class WindowView extends Application {
 
     // Updates scene title base on number of tasks
     private void updateTitle() {
-        boolean isEmpty = taskContainer.getChildren().isEmpty();
-        int taskNodeCount = taskContainer.getChildren().size();
-        if (isEmpty) {
-            taskTitle.setText("No Tasks");
+        if (!filteredTasks.isEmpty()) {
+            taskTitle.setText("Tasks remaining: " + filteredTasks.size() + "/" + taskList.size());
+        } else if (!taskList.isEmpty()) {
+            taskTitle.setText("Tasks remaining: " + taskList.size());
         } else {
-            taskTitle.setText( "Tasks remaining: " + taskNodeCount);
+            taskTitle.setText("No Tasks");
         }
     }
 
     // Method to filter tasks by name and update the display
     private void filterTaskByName(String searchKeyword) {
-        // Filter tasks by task name using the provided searchKeyword
-        filteredTasks = taskList.stream()
-                .filter(task -> task.getTaskName().toLowerCase().contains(searchKeyword.toLowerCase()))
-                .collect(Collectors.toList());
-        displayTasks(filteredTasks, taskContainer); // Update the display of tasks in the task container based on the filteredTasks list
-
-        // Add "no searched tasks" label if the filtered list is empty
-        if (filteredTasks.isEmpty()) {
-            taskContainer.getChildren().add(new Label("No searched tasks."));
+        if (searchKeyword.isEmpty()) {
+            // If the searchKeyword is empty, clear the filteredTasks list
+            filteredTasks.clear();
+            displayTasks(taskList, taskContainer); // Display all tasks from the original list
+            taskContainer.getChildren().remove(new Label("No searched tasks.")); // Remove the "no searched tasks" label if it was added before
+        } else {
+            // Filter tasks by task name using the provided searchKeyword
+            filteredTasks = taskList.stream()
+                    .filter(task -> task.getTaskName().toLowerCase().contains(searchKeyword.toLowerCase()))
+                    .collect(Collectors.toList());
+            displayTasks(filteredTasks, taskContainer); // Update the display of tasks in the task container based on the filteredTasks list
+            // Add "no searched tasks" label if the filtered list is empty
+            if (filteredTasks.isEmpty()) {
+                taskContainer.getChildren().add(new Label("No searched tasks."));
+            }
         }
     }
 
@@ -199,7 +211,7 @@ public class WindowView extends Application {
      */
     private void displayTasks(List<Task> tasks, VBox taskContainer) {
         // Sorts task objects via date
-        tasks.sort(Comparator.comparing(Task::getDate));
+        TaskSort.quickSort(tasks);
 
         // Clears container for all tasks before filtering them by date
         taskContainer.getChildren().clear();
@@ -210,12 +222,14 @@ public class WindowView extends Application {
             taskBox.setAlignment(Pos.CENTER);
             taskBox.setPadding(new Insets(8));
 
-            // Formats date to MM-dd
+            // Formats date to "Month Day"
             String taskName = task.getTaskName();
             String taskDateString = task.getDate().toString();
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate date = LocalDate.parse(taskDateString, dateFormatter);
-            String formattedDate = date.getMonth() + " " + date.getDayOfMonth();
+            String month = String.valueOf(date.getMonth());
+            String formattedDate = month.substring(0, 1).toUpperCase()
+                    + month.substring(1).toLowerCase() + " " + date.getDayOfMonth();
 
             // Task labels
             TaskLabel taskNameLabel = new TaskLabel(taskName);
@@ -263,8 +277,10 @@ public class WindowView extends Application {
             descriptionContainer.setPrefWidth(497);
             descriptionContainer.setPadding(new Insets(20));
             ScrollPane centerWindow = new ScrollPane(descriptionContainer);
-            centerWindow.setStyle("-fx-background-color: transparent; -fx-background-insets: 0;");
             VBox.setVgrow(centerWindow, Priority.ALWAYS);  // Make the ScrollPane grow vertically
+            centerWindow.setFitToWidth(true);
+            centerWindow.setStyle("-fx-background-color: transparent; -fx-background-insets: 0;");
+            centerWindow.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
             // Bottom nodes
             Button mainWindowButton = new Button("Back");
