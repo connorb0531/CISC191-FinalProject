@@ -1,5 +1,5 @@
 # CISC191
-Intermediate Java Programming Final Project Template
+Intermediate Java Programming Final Project by Connor Buckley
 ## Prerequisites
 1. Maven
 2. Git
