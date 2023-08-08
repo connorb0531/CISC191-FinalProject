@@ -7,9 +7,6 @@ import java.util.ArrayList;
  * The DataManager class provides methods to save and load objects using serialization.
  * It allows you to serialize an ArrayList of Task objects and save them to a file,
  * as well as deserialize the saved data and retrieve the ArrayList of Task objects.
- *
- * Usage in WindowView class:
- * DataManager dataManager = new DataManager();
  */
 public class DataManager {
     /**

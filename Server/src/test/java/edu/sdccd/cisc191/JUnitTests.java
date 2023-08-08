@@ -1,18 +1,21 @@
 package edu.sdccd.cisc191;
 
+import javafx.scene.control.Label;
 import org.junit.jupiter.api.Test;
-import java.io.File;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JUnitTests {
 
     @Test
-    void testTask()
-    {
+    void testTask() {
         LocalDate date = LocalDate.now();
         Task task = new Task("Work", "I have work womp womp", date);
 
@@ -36,8 +39,7 @@ public class JUnitTests {
 
         dataManager.saveObjects(testObjects, testFilePath);
 
-        File file = new File(testFilePath);
-        assertTrue(file.exists());
+        assertTrue(new java.io.File(testFilePath).exists());
     }
 
     @Test
@@ -73,5 +75,29 @@ public class JUnitTests {
         assertEquals(task1, taskList.get(0));
         assertEquals(task3, taskList.get(1));
         assertEquals(task2, taskList.get(2));
+    }
+
+    @Test
+    public void testFilterTaskByName() {
+        List<Task> taskList = new ArrayList<>();
+
+        Task task1 = new Task("Task 1", "Description for Task 1", LocalDate.now());
+        Task task2 = new Task("Task 2", "Description for Task 2", LocalDate.now());
+        Task task3 = new Task("Task 3", "Description for Task 3", LocalDate.now());
+        Task task4 = new Task("Task 4", "Description for Task 4", LocalDate.now());
+
+        taskList.add(task1);
+        taskList.add(task2);
+        taskList.add(task3);
+        taskList.add(task4);
+
+        String searchKeyword = "Task 2";
+        List<Task> filteredTasks = taskList.stream()
+                .filter(task -> task.getTaskName().toLowerCase().contains(searchKeyword.toLowerCase()))
+                .collect(Collectors.toList());
+
+        assertEquals(1, filteredTasks.size());
+        Task filteredTask = filteredTasks.get(0);
+        assertEquals("Task 2", filteredTask.getTaskName());
     }
 }

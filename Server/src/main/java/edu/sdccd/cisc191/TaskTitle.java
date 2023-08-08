@@ -8,7 +8,6 @@ import java.time.LocalDate;
 public class TaskTitle extends Label {
     public TaskTitle(String text) {
         super(text);
-        setPadding(new Insets(10));
         setStyle("-fx-font-size: 22px; -fx-font-family: sans-serif; -fx-font-weight: bold;");
     }
 }

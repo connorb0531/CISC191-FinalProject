@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class WindowView extends Application {
 
@@ -21,6 +22,7 @@ public class WindowView extends Application {
     private VBox taskContainer; //stores task gui's
     private TaskTitle taskTitle; // main scene task header
     private ArrayList<Task> taskList = new ArrayList<>(); //stores Task objects
+    List<Task> filteredTasks = new LinkedList<>();
     private final DataManager objectSerializer = new DataManager(); // serializes and deserializes task objects
     private boolean showLoadButton = true;
 
@@ -49,10 +51,6 @@ public class WindowView extends Application {
      *
      */
 
-    /*
-      TODO: Potential use of priority queue for tasks
-      TODO: Add time of day for task
-     */
     public static void main(String[] args) {
         launch(args);
     }
@@ -63,7 +61,15 @@ public class WindowView extends Application {
 
         // Labels in top part of scene
         taskTitle = new TaskTitle("No Tasks");
-        HBox topNodes = new HBox(taskTitle);
+        TextField searchTextField = new TextField();
+        searchTextField.setPromptText("Search by task name");
+        searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterTaskByName(newValue);
+        });
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox topNodes = new HBox(taskTitle, spacer, searchTextField);
+        topNodes.setPadding(new Insets(10));
 
         // Nodes in the center of scene
         taskContainer = new VBox(10);
@@ -90,8 +96,8 @@ public class WindowView extends Application {
 
         // Deserializes objects to task list from file
         if (showLoadButton) {
-            loadTasks();
-            displayTasks(taskContainer);
+            taskList = objectSerializer.loadObjects("tasks.ser");
+            displayTasks(taskList, taskContainer);
             showLoadButton = false;
         }
 
@@ -104,19 +110,33 @@ public class WindowView extends Application {
 
         // Serializes objects in task list onto file on application close
         stage.setOnCloseRequest(event -> {
-            saveTasks();
+            objectSerializer.saveObjects(taskList, "tasks.ser");
             System.out.println("Application closed...");
         });
     }
 
     // Updates scene title base on number of tasks
-    public void updateTitle() {
+    private void updateTitle() {
         boolean isEmpty = taskContainer.getChildren().isEmpty();
         int taskNodeCount = taskContainer.getChildren().size();
         if (isEmpty) {
             taskTitle.setText("No Tasks");
         } else {
             taskTitle.setText( "Tasks remaining: " + taskNodeCount);
+        }
+    }
+
+    // Method to filter tasks by name and update the display
+    private void filterTaskByName(String searchKeyword) {
+        // Filter tasks by task name using the provided searchKeyword
+        filteredTasks = taskList.stream()
+                .filter(task -> task.getTaskName().toLowerCase().contains(searchKeyword.toLowerCase()))
+                .collect(Collectors.toList());
+        displayTasks(filteredTasks, taskContainer); // Update the display of tasks in the task container based on the filteredTasks list
+
+        // Add "no searched tasks" label if the filtered list is empty
+        if (filteredTasks.isEmpty()) {
+            taskContainer.getChildren().add(new Label("No searched tasks."));
         }
     }
 
@@ -158,7 +178,7 @@ public class WindowView extends Application {
             if (!taskName.isEmpty()) {
                 Task task = new Task(taskName, taskDescription, taskDate); //creates new task object to store name and description
                 taskList.add(task); //adds to task array list
-                displayTasks(taskContainer); //displays task GUI's by date
+                displayTasks(taskList, taskContainer); //displays task GUI's by date
                 popupStage.close();
             }
         });
@@ -177,13 +197,13 @@ public class WindowView extends Application {
      *
      * @param taskContainer The VBox container that holds the task GUIs.
      */
-    private void displayTasks(VBox taskContainer) {
+    private void displayTasks(List<Task> tasks, VBox taskContainer) {
         // Sorts task objects via date
-        taskList.sort(Comparator.comparing(Task::getDate));
+        tasks.sort(Comparator.comparing(Task::getDate));
 
         // Clears container for all tasks before filtering them by date
         taskContainer.getChildren().clear();
-        for (Task task : taskList) {
+        for (Task task : tasks) {
             HBox taskBox = new HBox(); //container for Task GUI
             taskBox.setStyle("-fx-background-color: #dbdbdb");
             taskBox.setPrefHeight(55);
@@ -234,6 +254,7 @@ public class WindowView extends Application {
             // Top nodes
             TaskTitle descriptionTitle = new TaskTitle("Description:");
             HBox topNodes = new HBox(descriptionTitle);
+            topNodes.setPadding(new Insets(10));
 
             //Center nodes
             TaskLabel descriptionLabel = new TaskLabel(task.getTaskDescription());
@@ -250,7 +271,7 @@ public class WindowView extends Application {
             mainWindowButton.setOnAction(event -> { //switches stage/scene to main and displays tasks
                 try {
                     start(stage);
-                    displayTasks(taskContainer);
+                    displayTasks(taskList, taskContainer);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -271,16 +292,6 @@ public class WindowView extends Application {
             stage.setScene(descriptionWindow);
             stage.show();
         });
-    }
-
-    // Deserializes objects to task list from file
-    private void loadTasks() {
-        taskList = objectSerializer.loadObjects("tasks.ser");
-    }
-
-    // Serializes objects in task list onto file
-    private void saveTasks() {
-        objectSerializer.saveObjects(taskList, "tasks.ser");
     }
 
 }
