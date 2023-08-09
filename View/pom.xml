@@ -8,12 +8,12 @@
         <artifactId>FinalProject</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>Server</artifactId>
+    <artifactId>View</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>edu.sdccd.cisc191.template</groupId>
-            <artifactId>Common</artifactId>
+            <artifactId>Model</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

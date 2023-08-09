@@ -8,7 +8,7 @@
         <artifactId>FinalProject</artifactId>
         <version>1.0.0</version>
     </parent>
-    <artifactId>Common</artifactId>
+    <artifactId>Model</artifactId>
 
     <dependencies>
         <dependency>
