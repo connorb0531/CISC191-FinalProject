@@ -1,4 +1,4 @@
-package edu.sdccd.cisc191.JavaFXControls;
+package edu.sdccd.cisc191.JavaFXControls.Button;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -8,13 +8,15 @@ import javafx.scene.image.ImageView;
 
 import java.util.Objects;
 
-public class HomeButton extends Button {
-    public HomeButton() {
-        Image buttonImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/home.png")));
+public class CompleteTaskButton extends Button {
+
+
+    public CompleteTaskButton() {
+        Image buttonImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/check_mark.png")));
         ImageView buttonImageView = new ImageView(buttonImage);
         setGraphic(buttonImageView);
-        setPrefSize(20, 20);
-        setTooltip(new Tooltip("Main page"));
+        setPrefSize(10, 10);
+        setTooltip(new Tooltip("Completed task"));
         setStyle(getButtonStyle());
         setPadding(new Insets(5));
 
@@ -27,6 +29,7 @@ public class HomeButton extends Button {
     }
 
     private String getHoverStyle() {
-        return "-fx-background-color: #dbdbdb; -fx-border-color: transparent;";
+        return "-fx-background-color: #4aff3d; -fx-border-color: transparent;";
     }
+
 }

@@ -1,4 +1,4 @@
-package edu.sdccd.cisc191.JavaFXControls;
+package edu.sdccd.cisc191.JavaFXControls.Button;
 
 import javafx.scene.image.Image;
 import javafx.scene.control.Button;

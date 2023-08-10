@@ -4,10 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,7 +22,7 @@ public class JUnitTests {
     MODULE 7 is present in testSortTasksByDate() & testSortTasksByDate()
     MODULE 8 is present in TODO...
     MODULE 9 is present in testAutoSave()
-    MODULE 10 has no specific test, although it has implementation in Main.java (i.e. event handlers)
+    MODULE 10 is present in testFilterTaskByName()
      */
 
 
@@ -69,7 +67,7 @@ public class JUnitTests {
 
         taskSerializer.saveObjects(tasks, "test.ser");
 
-        ArrayList<String> loadedObjects = taskSerializer.loadObjects("test.ser");
+        ArrayList<String> loadedObjects = taskSerializer.load("test.ser");
 
         assertEquals(tasks, loadedObjects);
     }
@@ -95,6 +93,7 @@ public class JUnitTests {
     }
 
     //MODULE 7: Searching
+    //MODULE 10: Stream API
     @Test
     void testFilterTaskByName() {
         List<Task> taskList = new LinkedList<>();
@@ -152,7 +151,7 @@ public class JUnitTests {
         // Give the continuousSaveThread some time to execute
         Thread.sleep(durationInMillis + 1000);
 
-        ArrayList<Task> loadedTasks = taskSerializer.loadObjects("test.ser");
+        ArrayList<Task> loadedTasks = taskSerializer.load("test.ser");
 
         assertEquals(taskList.size(), loadedTasks.size());
 

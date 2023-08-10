@@ -23,7 +23,7 @@ public class TaskSerializer {
             objectOutputStream.writeObject(objects);
             objectOutputStream.close();
             fileOutputStream.close();
-            System.out.println("Tasks saved.");
+            System.out.println("Tasks loaded from " + filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,14 +37,14 @@ public class TaskSerializer {
      * @return The ArrayList of objects loaded from the file.
      *         If an exception occurs during deserialization, an empty ArrayList is returned.
      */
-    public <T> ArrayList<T> loadObjects(String filePath) {
+    public <T> ArrayList<T> load(String filePath) {
         try {
             FileInputStream fileInputStream = new FileInputStream(filePath);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             ArrayList<T> loadedObjects = (ArrayList<T>) objectInputStream.readObject();
             objectInputStream.close();
             fileInputStream.close();
-            System.out.println("Tasks loaded.");
+            System.out.println("Tasks loaded from " + filePath);
             return loadedObjects;
 
         } catch (FileNotFoundException e) {

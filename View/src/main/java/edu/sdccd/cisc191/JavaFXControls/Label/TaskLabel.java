@@ -1,4 +1,4 @@
-package edu.sdccd.cisc191.JavaFXControls;
+package edu.sdccd.cisc191.JavaFXControls.Label;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;

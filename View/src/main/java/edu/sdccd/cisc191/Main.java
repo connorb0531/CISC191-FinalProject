@@ -1,16 +1,20 @@
 package edu.sdccd.cisc191;
 
-import edu.sdccd.cisc191.JavaFXControls.*;
+import edu.sdccd.cisc191.JavaFXControls.Button.*;
+import edu.sdccd.cisc191.JavaFXControls.Label.TaskLabel;
+import edu.sdccd.cisc191.JavaFXControls.Label.TaskTitleLabel;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -20,15 +24,20 @@ public class Main extends Application {
 
     // Global variables for uses in multiple methods
     private Stage stage;
+    private final int sceneWidth = 600; // Scenes' width
+    private final int sceneHeight = 550; // Scenes' height
+
     private VBox taskContainer; //stores task gui's
-    private TaskTitle taskTitle; // main scene task header
+    private TaskTitleLabel taskTitleLabel; // main scene task header
     private ArrayList<Task> taskList = new ArrayList<>(); // stores Task objects
     private ArrayList<Task> completeTasks = new ArrayList<>(); // stores completed Task objects
     List<Task> filteredTasks = new LinkedList<>(); // stores current search tasks
     private final TaskSerializer taskSerializer = new TaskSerializer(); // serializes and deserializes task objects
     private boolean loadTasks = true; // allows for one time task loading
-    private boolean running = true; // shows state of autoSave method
+    private boolean isGraphPopupOpen = false; // shows if graph popup is open
 
+    private boolean running = true; // shows state of autoSave method
+    private TaskGraphManager graphManager; // manages completed ask graph popup
 
     /**
      * The WindowView class creates a task manager GUI using JavaFX.
@@ -42,7 +51,7 @@ public class Main extends Application {
      * the task's name and description. A task is only added if the task name field
      * is not empty. The task details are stored in a Task object.
      *
-     * The program uses several custom controls such as TaskTitle, AddButton,
+     * The program uses several custom controls such as TaskTitleLabel, AddButton,
      * CloseTaskButton, and TaskLabel, which are not defined in this code. Their classes
      * define their looks and behaviors rather than functionality
      *
@@ -54,7 +63,6 @@ public class Main extends Application {
      * Created: 2023-07-09
      *
      */
-
     public static void main(String[] args) {
         launch(args);
     }
@@ -64,17 +72,17 @@ public class Main extends Application {
         this.stage = stage;
 
         // Labels in top part of scene
-        taskTitle = new TaskTitle("No Tasks");
+        taskTitleLabel = new TaskTitleLabel("No Tasks");
         TextField searchTextField = new TextField();
         searchTextField.setFocusTraversable(false);
-        searchTextField.setStyle("-fx-focus-color: e3c502");
+        searchTextField.setStyle("-fx-focus-color: #e3c502; -fx-faint-focus-color: transparent ;");
         searchTextField.setPromptText("Search by task name");
         searchTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterTaskByName(newValue);
+            filterTaskByName(newValue); //takes typed input as param
         });
         Region topSpacer = new Region();
         HBox.setHgrow(topSpacer, Priority.ALWAYS);
-        HBox topNodes = new HBox(taskTitle, topSpacer, searchTextField);
+        HBox topNodes = new HBox(taskTitleLabel, topSpacer, searchTextField);
         topNodes.setPadding(new Insets(10));
 
         // Nodes in the center of scene
@@ -89,9 +97,8 @@ public class Main extends Application {
         Region bottomSpacer = new Region();
         HBox.setHgrow(bottomSpacer, Priority.ALWAYS);
         CompleteTaskButton completeTaskButton = new CompleteTaskButton();
-        completeTaskButton.setOnAction(event -> {
-            showCompletedTasks();
-        });
+        completeTaskButton.setPrefSize(30, 30);
+        completeTaskButton.setOnAction(event -> showCompletedTasks());
         AddButton addButton = new AddButton();
         addButton.setOnAction(event -> showAddTaskPopup()); //popup window asking user for task
         HBox bottomNodes = new HBox(completeTaskButton, bottomSpacer, addButton);
@@ -108,8 +115,8 @@ public class Main extends Application {
 
         // Deserializes objects to task list from file only once
         if (loadTasks) {
-            taskList = taskSerializer.loadObjects("tasks.ser");
-            completeTasks = taskSerializer.loadObjects("completed_tasks.ser");
+            taskList = taskSerializer.load("tasks.ser");
+            completeTasks = taskSerializer.load("completed_tasks.ser");
             displayTasks(taskList, "normal", taskContainer);
             loadTasks = false;
         }
@@ -117,7 +124,7 @@ public class Main extends Application {
         autoSave(); // saves Task objects every 5 seconds
 
         //Scene & stage set up
-        Scene mainWindow = new Scene(root, 500, 500);
+        Scene mainWindow = new Scene(root, sceneWidth, sceneHeight);
         stage.setScene(mainWindow);
         stage.getIcons().add(stageIcon);
         stage.setTitle("Daily Task Manager");
@@ -135,11 +142,11 @@ public class Main extends Application {
     // Updates scene title base on number of tasks
     private void updateTitle() {
         if (!filteredTasks.isEmpty()) {
-            taskTitle.setText("Tasks remaining: " + filteredTasks.size() + "/" + taskList.size());
+            taskTitleLabel.setText("Tasks remaining: " + filteredTasks.size() + "/" + taskList.size());
         } else if (!taskList.isEmpty()) {
-            taskTitle.setText("Tasks remaining: " + taskList.size());
+            taskTitleLabel.setText("Tasks remaining: " + taskList.size());
         } else {
-            taskTitle.setText("No Tasks");
+            taskTitleLabel.setText("No Tasks");
         }
     }
 
@@ -149,7 +156,7 @@ public class Main extends Application {
             // If the searchKeyword is empty, clear the filteredTasks list
             filteredTasks.clear();
             displayTasks(taskList, "normal", taskContainer); // Display all tasks from the original list
-            taskContainer.getChildren().remove(new Label("No searched tasks.")); // Remove the "no searched tasks" label if it was added before
+            taskContainer.getChildren().remove(new Label("   No searched tasks.")); // Remove the "no searched tasks" label if it was added before
         } else {
             // Filter tasks by task name using the provided searchKeyword
             filteredTasks = taskList.stream()
@@ -158,7 +165,7 @@ public class Main extends Application {
             displayTasks(filteredTasks, "normal", taskContainer); // Update the display of tasks in the task container based on the filteredTasks list
             // Add "no searched tasks" label if the filtered list is empty
             if (filteredTasks.isEmpty()) {
-                taskContainer.getChildren().add(new Label("No searched tasks."));
+                taskContainer.getChildren().add(new Label("   No searched tasks."));
             }
         }
     }
@@ -174,23 +181,25 @@ public class Main extends Application {
         popupStage.setResizable(false);
 
         // Labels and fields of popup
-        Label taskLabel = new Label("Task:");
         TextField taskTextField = new TextField();
-        Label descriptionLabel = new Label("Description:");
+        taskTextField.setPromptText("Task name");
+        taskTextField.setFocusTraversable(false);
+        taskTextField.setStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
         TextArea descriptionTextArea = new TextArea();
-        descriptionTextArea.setPrefSize(45, 25);
+        descriptionTextArea.setPromptText("Task description");
+        descriptionTextArea.setFocusTraversable(false);
+        descriptionTextArea.setStyle("-fx-focus-color: transparent; -fx-faint-focus-color: transparent;");
+        descriptionTextArea.setPrefSize(45, 150);
         descriptionTextArea.setWrapText(true); //grows vertically
 
         // Date & and time of task entered by user
-        Label dateLabel = new Label("Date of task:");
         DatePicker taskDateCalendar = new DatePicker();
+        taskDateCalendar.setFocusTraversable(false);
+        taskDateCalendar.setStyle("-fx-focus-color: #e3c502; -fx-faint-focus-color: transparent;");
         taskDateCalendar.setValue(LocalDate.now());
 
-        HBox taskLF = new HBox(5, taskLabel, taskTextField);
-        HBox  dateLF = new HBox(5, dateLabel, taskDateCalendar);
-
         // Saves user typed task name, description, & date into strings
-        Button saveButton = new Button("Save");
+        SaveButton saveButton = new SaveButton();
         saveButton.setOnAction(e -> {
             String taskName = taskTextField.getText();
             String taskDescription = descriptionTextArea.getText();
@@ -206,13 +215,42 @@ public class Main extends Application {
             }
         });
 
+        Region bottomSpacer = new Region();
+        HBox.setHgrow(bottomSpacer, Priority.ALWAYS);
+
+        // Bottom node container
+        HBox bottomNodes = new HBox(taskDateCalendar, bottomSpacer, saveButton);
+        bottomNodes.setAlignment(Pos.BOTTOM_RIGHT);
+        bottomNodes.setPadding(new Insets(6));
+
+        Region vboxSpacer = new Region();
+        VBox.setVgrow(vboxSpacer, Priority.ALWAYS);
+
         // Popup scene & stage set up
-        VBox popupRoot = new VBox(15);
-        popupRoot.setPadding(new Insets(15));
-        popupRoot.getChildren().addAll(taskLF, descriptionLabel, descriptionTextArea, dateLF, saveButton);
+        VBox popupRoot = new VBox(taskTextField, descriptionTextArea, vboxSpacer, bottomNodes);
         Scene popupScene = new Scene(popupRoot, 300, 215);
         popupStage.setScene(popupScene);
         popupStage.showAndWait();
+    }
+
+    private void showCompletedTaskGraph() {
+        Platform.runLater(() -> {
+            if (!isGraphPopupOpen) {
+                isGraphPopupOpen = true;
+
+                Axis<String> xAxis = new CategoryAxis();
+                NumberAxis yAxis = new NumberAxis();
+                ScatterChart<String, Number> scatterChart = new ScatterChart<>(xAxis, yAxis);
+                graphManager = new TaskGraphManager(scatterChart);
+                graphManager.updateGraphData(completeTasks);
+                graphManager.showGraph(completeTasks);
+
+                // Set an action to execute when the graph popup is closed
+                graphManager.setCloseRequestHandler(() -> {
+                    isGraphPopupOpen = false;
+                });
+            }
+        });
     }
 
     /**
@@ -251,14 +289,16 @@ public class Main extends Application {
             // Changes and scene to display description of task
             taskNameLabel.setOnMouseClicked(event -> showTaskDescription(task));
 
-            CompleteTaskButton completeTaskButton = new CompleteTaskButton();
             // Adds task object to completeTasks list
             // Removes task GUI component and task object from list
+            CompleteTaskButton completeTaskButton = new CompleteTaskButton();
             if (type.equals("normal")) {
                 completeTaskButton.setOnAction(event -> {
                     taskContainer.getChildren().remove(taskBox);
                     taskList.remove(task);
                     completeTasks.add(task);
+                    task.setDateCompleted(new Date());
+                    graphManager.updateGraphData(completeTasks);
                     updateTitle();
                 });
             }
@@ -269,6 +309,7 @@ public class Main extends Application {
                 taskContainer.getChildren().remove(taskBox);
                 taskList.remove(task);
                 completeTasks.remove(task);
+                graphManager.updateGraphData(completeTasks);
                 updateTitle();
             });
 
@@ -293,7 +334,7 @@ public class Main extends Application {
     private void showTaskDescription(Task task) {
         Platform.runLater(() -> {
             // Top nodes
-            TaskTitle descriptionTitle = new TaskTitle("Description:");
+            TaskTitleLabel descriptionTitle = new TaskTitleLabel("Description:");
             HBox topNodes = new HBox(descriptionTitle);
             topNodes.setPadding(new Insets(10));
 
@@ -330,7 +371,7 @@ public class Main extends Application {
             root.setBottom(bottomNodes);
 
             //Scene & stage set up
-            Scene descriptionWindow = new Scene(root, 500, 500);
+            Scene descriptionWindow = new Scene(root, sceneWidth, sceneHeight);
             stage.setScene(descriptionWindow);
             stage.show();
         });
@@ -339,7 +380,7 @@ public class Main extends Application {
     private void showCompletedTasks() {
         Platform.runLater(() -> {
             // Top nodes
-            TaskTitle title = new TaskTitle("Completed Tasks");
+            TaskTitleLabel title = new TaskTitleLabel("Completed Tasks");
             HBox descriptionTitleContainer = new HBox(title);
             descriptionTitleContainer.setPadding(new Insets(10));
 
@@ -361,7 +402,13 @@ public class Main extends Application {
                 }
             });
 
-            HBox bottomNodes = new HBox(mainWindowButton);
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+            GraphButton showGraphButton = new GraphButton();
+            showGraphButton.setOnAction(event -> showCompletedTaskGraph()); //shows popup scene of graph (date vs. date completed)
+
+            HBox bottomNodes = new HBox(showGraphButton, spacer, mainWindowButton);
             bottomNodes.setAlignment(Pos.CENTER_RIGHT);
             bottomNodes.setPadding(new Insets(5));
 
@@ -373,8 +420,12 @@ public class Main extends Application {
 
             displayTasks(completeTasks, "completed", taskContainer);
 
+            if (completeTasks.isEmpty()) {
+                taskContainer.getChildren().add(new Label("   No completed tasks."));
+            }
+
             //Scene & stage set up
-            Scene scene = new Scene(root, 500, 500);
+            Scene scene = new Scene(root, sceneWidth, sceneHeight);
             stage.setScene(scene);
             stage.show();
         });
@@ -398,5 +449,4 @@ public class Main extends Application {
         continuousSaveThread.setDaemon(true); //will be terminated when the application exits
         continuousSaveThread.start();
     }
-
 }
