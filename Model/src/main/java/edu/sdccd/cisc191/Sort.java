@@ -3,7 +3,7 @@ package edu.sdccd.cisc191;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TaskSort {
+public class Sort {
     public static void quickSort(List<Task> tasks) {
         if (tasks == null || tasks.size() <= 1) {
             return;

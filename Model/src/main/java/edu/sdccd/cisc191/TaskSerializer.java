@@ -4,11 +4,11 @@ import java.io.*;
 import java.util.ArrayList;
 
 /**
- * The DataManager class provides methods to save and load objects using serialization.
+ * The TaskSerializer class provides methods to save and load objects using serialization.
  * It allows you to serialize an ArrayList of Task objects and save them to a file,
  * as well as deserialize the saved data and retrieve the ArrayList of Task objects.
  */
-public class DataManager {
+public class TaskSerializer {
     /**
      * Saves an ArrayList of objects to a file using serialization.
      *
@@ -23,7 +23,7 @@ public class DataManager {
             objectOutputStream.writeObject(objects);
             objectOutputStream.close();
             fileOutputStream.close();
-            System.out.println("Objects saved.");
+            System.out.println("Tasks saved.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,7 +44,7 @@ public class DataManager {
             ArrayList<T> loadedObjects = (ArrayList<T>) objectInputStream.readObject();
             objectInputStream.close();
             fileInputStream.close();
-            System.out.println("Objects loaded.");
+            System.out.println("Tasks loaded.");
             return loadedObjects;
 
         } catch (FileNotFoundException e) {

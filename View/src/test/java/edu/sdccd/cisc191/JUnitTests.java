@@ -1,19 +1,34 @@
 package edu.sdccd.cisc191;
 
-import javafx.scene.control.Label;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JUnitTests {
+    /*
+    MODULE 1 is present in every test (i.e. loops, variables, etc.)
+    MODULE 2 has no specific test, although it has implementation in Main.java
+    MODULE 3 present in testTask()
+    MODULE 4 present in testSaveTasks() & testLoadTasks()
+    MODULE 5 is present in every test (i.e. ArrayList)
+    MODULE 6 has no specific test, although it has implementation in Main.java (i.e. filteredTasks)
+    MODULE 7 is present in testSortTasksByDate() & testSortTasksByDate()
+    MODULE 8 is present in TODO...
+    MODULE 9 is present in testAutoSave()
+    MODULE 10 has no specific test, although it has implementation in Main.java (i.e. event handlers)
+     */
 
+
+    //MODULE 3: OOP
     @Test
     void testTask() {
         LocalDate date = LocalDate.now();
@@ -24,9 +39,10 @@ public class JUnitTests {
         assertEquals(date, task.getDate());
     }
 
+    //MODULE 4: Data Serialization
     @Test
-    void testSaveObjects() {
-        DataManager dataManager = new DataManager();
+    void testSaveTasks() {
+        TaskSerializer taskSerializer = new TaskSerializer();
         String testFilePath = "test.ser";
         LocalDate date = LocalDate.now();
 
@@ -37,27 +53,28 @@ public class JUnitTests {
         testObjects.add(task1);
         testObjects.add(task2);
 
-        dataManager.saveObjects(testObjects, testFilePath);
+        taskSerializer.saveObjects(testObjects, testFilePath);
 
         assertTrue(new java.io.File(testFilePath).exists());
     }
 
+    //MODULE 4: Data Serialization
     @Test
-    void testLoadObjects() {
-        DataManager dataManager = new DataManager();
-        String testFilePath = "test.ser";
+    void testLoadTasks() {
+        TaskSerializer taskSerializer = new TaskSerializer();
 
-        ArrayList<String> testObjects = new ArrayList<>();
-        testObjects.add("Object 1");
-        testObjects.add("Object 2");
+        ArrayList<String> tasks = new ArrayList<>();
+        tasks.add("Object 1");
+        tasks.add("Object 2");
 
-        dataManager.saveObjects(testObjects, testFilePath);
+        taskSerializer.saveObjects(tasks, "test.ser");
 
-        ArrayList<String> loadedObjects = dataManager.loadObjects(testFilePath);
+        ArrayList<String> loadedObjects = taskSerializer.loadObjects("test.ser");
 
-        assertEquals(testObjects, loadedObjects);
+        assertEquals(tasks, loadedObjects);
     }
 
+    //MODULE 7: Sorting
     @Test
     void testSortTasksByDate() {
         ArrayList<Task> taskList = new ArrayList<>();
@@ -70,16 +87,17 @@ public class JUnitTests {
         taskList.add(task3);
         taskList.add(task1);
 
-        taskList.sort(Comparator.comparing(Task::getDate));
+        Sort.quickSort(taskList);
 
         assertEquals(task1, taskList.get(0));
         assertEquals(task3, taskList.get(1));
         assertEquals(task2, taskList.get(2));
     }
 
+    //MODULE 7: Searching
     @Test
-    public void testFilterTaskByName() {
-        List<Task> taskList = new ArrayList<>();
+    void testFilterTaskByName() {
+        List<Task> taskList = new LinkedList<>();
 
         Task task1 = new Task("Task 1", "Description for Task 1", LocalDate.now());
         Task task2 = new Task("Task 2", "Description for Task 2", LocalDate.now());
@@ -99,5 +117,53 @@ public class JUnitTests {
         assertEquals(1, filteredTasks.size());
         Task filteredTask = filteredTasks.get(0);
         assertEquals("Task 2", filteredTask.getTaskName());
+    }
+
+    //MODULE 9: Concurrency
+    @Test
+    void testAutoSave() throws InterruptedException {
+        TaskSerializer taskSerializer = new TaskSerializer();
+
+        long durationInMillis = 750; //
+
+        ArrayList<Task> taskList = new ArrayList<>();
+        taskList.add(new Task("Task 1", "Description for Task 1", LocalDate.now()));
+        taskList.add(new Task("Task 2", "Description for Task 2", LocalDate.now()));
+
+        // Calculate the end time for the continuousSaveThread
+        long startTime = System.currentTimeMillis();
+        long endTime = startTime + durationInMillis;
+
+        Thread continuousSaveThread = new Thread(() -> {
+            while (System.currentTimeMillis() < endTime) {
+                taskSerializer.saveObjects(taskList, "test.ser");
+                try {
+                    Thread.sleep(500); // delay between saves (0.5 seconds)
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        continuousSaveThread.setDaemon(true); // will be terminated when the application exits
+        continuousSaveThread.start();
+
+        // Give the continuousSaveThread some time to execute
+        Thread.sleep(durationInMillis + 1000);
+
+        ArrayList<Task> loadedTasks = taskSerializer.loadObjects("test.ser");
+
+        assertEquals(taskList.size(), loadedTasks.size());
+
+        // Compare individual tasks
+        for (int i = 0; i < taskList.size(); i++) {
+            Task originalTask = taskList.get(i);
+            Task loadedTask = loadedTasks.get(i);
+
+            assertEquals(originalTask.getTaskName(), loadedTask.getTaskName());
+            assertEquals(originalTask.getTaskDescription(), loadedTask.getTaskDescription());
+            assertEquals(originalTask.getDate(), loadedTask.getDate());
+        }
     }
 }

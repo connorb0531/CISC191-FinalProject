@@ -12,6 +12,7 @@ public class Task implements Serializable {
     private final String taskName;
     private final String taskDescription;
     private final LocalDate date;
+    private LocalDate dateCompleted;
 
     /**
      * Constructs a Task object with the specified task name, description, and date.
@@ -35,6 +36,14 @@ public class Task implements Serializable {
     }
     public LocalDate getDate() {
         return date;
+    }
+
+    public LocalDate getDateCompleted() {
+        return dateCompleted;
+    }
+
+    public void setDateCompleted(LocalDate dateCompleted) {
+        this.dateCompleted = dateCompleted;
     }
 
     @Override

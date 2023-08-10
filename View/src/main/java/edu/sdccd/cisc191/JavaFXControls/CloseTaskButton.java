@@ -31,7 +31,7 @@ public class CloseTaskButton extends Button {
     }
 
     private String getButtonStyle() {
-        return "-fx-background-color: transparent; -fx-border-color: #9e9d9d;";
+        return "-fx-background-color: transparent; -fx-border-color: transparent;";
     }
 
     private String getHoverStyle() {
