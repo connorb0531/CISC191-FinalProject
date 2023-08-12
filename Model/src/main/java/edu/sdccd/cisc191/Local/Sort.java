@@ -1,4 +1,4 @@
-package edu.sdccd.cisc191;
+package edu.sdccd.cisc191.Local;
 
 import java.util.ArrayList;
 import java.util.List;

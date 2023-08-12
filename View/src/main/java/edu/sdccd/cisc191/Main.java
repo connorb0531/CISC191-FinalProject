@@ -3,6 +3,9 @@ package edu.sdccd.cisc191;
 import edu.sdccd.cisc191.JavaFXControls.Button.*;
 import edu.sdccd.cisc191.JavaFXControls.Label.TaskLabel;
 import edu.sdccd.cisc191.JavaFXControls.Label.TaskTitleLabel;
+import edu.sdccd.cisc191.Local.Sort;
+import edu.sdccd.cisc191.Local.Task;
+import edu.sdccd.cisc191.Local.TaskSerializer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -26,42 +29,50 @@ public class Main extends Application {
     private Stage stage;
     private final int sceneWidth = 600; // Scenes' width
     private final int sceneHeight = 550; // Scenes' height
-
     private VBox taskContainer; //stores task gui's
     private TaskTitleLabel taskTitleLabel; // main scene task header
     private ArrayList<Task> taskList = new ArrayList<>(); // stores Task objects
-    private ArrayList<Task> completeTasks = new ArrayList<>(); // stores completed Task objects
+    private ArrayList<Task> completedTasks = new ArrayList<>(); // stores completed Task objects
     List<Task> filteredTasks = new LinkedList<>(); // stores current search tasks
     private final TaskSerializer taskSerializer = new TaskSerializer(); // serializes and deserializes task objects
     private boolean loadTasks = true; // allows for one time task loading
     private boolean isGraphPopupOpen = false; // shows if graph popup is open
-
     private boolean running = true; // shows state of autoSave method
-    private TaskGraphManager graphManager; // manages completed ask graph popup
+    private final Axis<String> xAxis = new CategoryAxis(); // completed date x-axis of line chart
+    private final NumberAxis yAxis = new NumberAxis(); // number of completed tasks y-axis of line chart
+    private final LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
+    private final TaskGraphManager graphManager = new TaskGraphManager(lineChart);; // manages completed ask graph popup
+
 
     /**
      * The WindowView class creates a task manager GUI using JavaFX.
-     *
-     * It provides a main window view where the users can add tasks,
-     * view the tasks, and delete them. The number of tasks is displayed
-     * in the title of the main window and is updated each time a task is added
-     * or removed. The tasks are stored in an ArrayList.
-     *
-     * When adding a task, a new popup window appears where the user can enter
-     * the task's name and description. A task is only added if the task name field
-     * is not empty. The task details are stored in a Task object.
-     *
-     * The program uses several custom controls such as TaskTitleLabel, AddButton,
-     * CloseTaskButton, and TaskLabel, which are not defined in this code. Their classes
-     * define their looks and behaviors rather than functionality
-     *
-     * When closing the application, the data of the task objects are saves onto a SER
-     * file. And launching the application loads those tasks back.
-     *
+     * <p>
+     * This class provides a graphical user interface for managing tasks. Users can
+     * add, view, and delete tasks, while the title of the main window dynamically
+     * displays the number of tasks. Task data is stored in ArrayLists for active
+     * tasks and completed tasks.
+     * <p>
+     * Features:
+     * - Users can add tasks using a popup window with task name, description, and date.
+     * - Tasks can be filtered by name using a search input field.
+     * - Task descriptions can be viewed in a separate window.
+     * - Completed tasks can be viewed, including a graph displaying task completion over time.
+     * - Custom controls like TaskTitleLabel, AddButton, CloseTaskButton, and TaskLabel are used.
+     * - Task data is auto-saved every 5 seconds to serialized files.
+     * <p>
+     * Methods:
+     * - updateTitle(): Updates the title label to display the number of tasks.
+     * - filterTaskByName(String searchKeyword)`: Filters tasks by name and updates the display.
+     * - showAddTaskPopup(): Displays a popup window for adding new tasks.
+     * - showCompletedTaskGraph(): Displays a graph of completed tasks in a popup.
+     * - displayTasks(List<Task> tasks, String type, VBox taskContainer)`: Displays task GUIs.
+     * - showTaskDescription(Task task): Displays the description of a task in a separate window.
+     * - showCompletedTasks(): Displays completed tasks, including a graph, in a separate window.
+     * - autoSave(): Automatically saves task data every 5 seconds.
+     * <p>
      * Author: Connor Buckley
      * Email: connorbuckley144@gmail.com
      * Created: 2023-07-09
-     *
      */
     public static void main(String[] args) {
         launch(args);
@@ -116,7 +127,7 @@ public class Main extends Application {
         // Deserializes objects to task list from file only once
         if (loadTasks) {
             taskList = taskSerializer.load("tasks.ser");
-            completeTasks = taskSerializer.load("completed_tasks.ser");
+            completedTasks = taskSerializer.load("completed_tasks.ser");
             displayTasks(taskList, "normal", taskContainer);
             loadTasks = false;
         }
@@ -132,9 +143,10 @@ public class Main extends Application {
 
         // Serializes objects in task list onto file on application close
         stage.setOnCloseRequest(event -> {
-            running = false;
+            running = false; //stops autosave thread
             taskSerializer.saveObjects(taskList, "tasks.ser");
-            taskSerializer.saveObjects(completeTasks, "completed_tasks.ser");
+            taskSerializer.saveObjects(completedTasks, "completed_tasks.ser");
+            Platform.exit(); //closes all windows along with main
             System.out.println("Application closed...");
         });
     }
@@ -211,6 +223,7 @@ public class Main extends Application {
                 Task task = new Task(taskName, taskDescription, taskDate); //creates new task object to store name and description
                 taskList.add(task); //adds to task array list
                 displayTasks(taskList, "normal", taskContainer); //displays task GUI's by date
+                graphManager.updateGraphData(completedTasks, taskList);
                 popupStage.close();
             }
         });
@@ -238,12 +251,9 @@ public class Main extends Application {
             if (!isGraphPopupOpen) {
                 isGraphPopupOpen = true;
 
-                Axis<String> xAxis = new CategoryAxis();
-                NumberAxis yAxis = new NumberAxis();
-                ScatterChart<String, Number> scatterChart = new ScatterChart<>(xAxis, yAxis);
-                graphManager = new TaskGraphManager(scatterChart);
-                graphManager.updateGraphData(completeTasks);
-                graphManager.showGraph(completeTasks);
+                // Update and show graph
+                graphManager.updateGraphData(completedTasks, taskList);
+                graphManager.showGraph(completedTasks, taskList);
 
                 // Set an action to execute when the graph popup is closed
                 graphManager.setCloseRequestHandler(() -> {
@@ -296,9 +306,9 @@ public class Main extends Application {
                 completeTaskButton.setOnAction(event -> {
                     taskContainer.getChildren().remove(taskBox);
                     taskList.remove(task);
-                    completeTasks.add(task);
-                    task.setDateCompleted(new Date());
-                    graphManager.updateGraphData(completeTasks);
+                    completedTasks.add(task);
+                    task.setDateCompleted(LocalDate.now());
+                    graphManager.updateGraphData(completedTasks, taskList);
                     updateTitle();
                 });
             }
@@ -308,8 +318,8 @@ public class Main extends Application {
             closeTaskButton.setOnAction(event -> {
                 taskContainer.getChildren().remove(taskBox);
                 taskList.remove(task);
-                completeTasks.remove(task);
-                graphManager.updateGraphData(completeTasks);
+                completedTasks.remove(task);
+                graphManager.updateGraphData(completedTasks, taskList);
                 updateTitle();
             });
 
@@ -418,9 +428,9 @@ public class Main extends Application {
             root.setCenter(centerWindow);
             root.setBottom(bottomNodes);
 
-            displayTasks(completeTasks, "completed", taskContainer);
+            displayTasks(completedTasks, "completed", taskContainer);
 
-            if (completeTasks.isEmpty()) {
+            if (completedTasks.isEmpty()) {
                 taskContainer.getChildren().add(new Label("   No completed tasks."));
             }
 
@@ -429,15 +439,18 @@ public class Main extends Application {
             stage.setScene(scene);
             stage.show();
         });
-
     }
 
-    // Creates another thread to save Tasks objects every 5 seconds
+    /**
+     * Creates a new thread for auto-saving Task objects every 5 seconds.
+     * This thread continues running as long as the `running` variable is `true`.
+     * When the application is closing, the thread is stopped.
+     */
     private void autoSave() {
         Thread continuousSaveThread = new Thread(() -> {
             while (running) {
                 taskSerializer.saveObjects(taskList, "tasks.ser");
-                taskSerializer.saveObjects(completeTasks, "completed_tasks.ser");
+                taskSerializer.saveObjects(completedTasks, "completed_tasks.ser");
                 try {
                     Thread.sleep(5000); //delay between saves
                 } catch (InterruptedException e) {
@@ -445,7 +458,6 @@ public class Main extends Application {
                 }
             }
         });
-
         continuousSaveThread.setDaemon(true); //will be terminated when the application exits
         continuousSaveThread.start();
     }

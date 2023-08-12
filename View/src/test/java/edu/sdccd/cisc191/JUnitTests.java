@@ -1,5 +1,8 @@
 package edu.sdccd.cisc191;
 
+import edu.sdccd.cisc191.Local.Sort;
+import edu.sdccd.cisc191.Local.Task;
+import edu.sdccd.cisc191.Local.TaskSerializer;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -20,7 +23,7 @@ public class JUnitTests {
     MODULE 5 is present in every test (i.e. ArrayList)
     MODULE 6 has no specific test, although it has implementation in Main.java (i.e. filteredTasks)
     MODULE 7 is present in testSortTasksByDate() & testSortTasksByDate()
-    MODULE 8 is present in TODO...
+    MODULE 8 is present in edu.sdccd.cisc191.Remote classes
     MODULE 9 is present in testAutoSave()
     MODULE 10 is present in testFilterTaskByName()
      */

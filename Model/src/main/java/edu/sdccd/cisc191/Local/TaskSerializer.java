@@ -1,4 +1,4 @@
-package edu.sdccd.cisc191;
+package edu.sdccd.cisc191.Local;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class TaskSerializer {
             objectOutputStream.writeObject(objects);
             objectOutputStream.close();
             fileOutputStream.close();
-            System.out.println("Tasks loaded from " + filePath);
+            System.out.println("Objects saved to " + filePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,7 +44,7 @@ public class TaskSerializer {
             ArrayList<T> loadedObjects = (ArrayList<T>) objectInputStream.readObject();
             objectInputStream.close();
             fileInputStream.close();
-            System.out.println("Tasks loaded from " + filePath);
+            System.out.println("Objects loaded from " + filePath);
             return loadedObjects;
 
         } catch (FileNotFoundException e) {

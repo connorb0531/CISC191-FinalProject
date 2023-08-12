@@ -1,8 +1,7 @@
-package edu.sdccd.cisc191;
+package edu.sdccd.cisc191.Local;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * The Task class represents a task with a name, description, and date.
@@ -13,7 +12,8 @@ public class Task implements Serializable {
     private final String taskName;
     private final String taskDescription;
     private final LocalDate date;
-    private Date dateCompleted;
+    private LocalDate dateCompleted;
+
     /**
      * Constructs a Task object with the specified task name, description, and date.
      *
@@ -21,13 +21,11 @@ public class Task implements Serializable {
      * @param taskDescription the description of the task
      * @param date            the date of the task
      */
-
     public Task(String taskName, String taskDescription, LocalDate date) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.date = date;
     }
-
     public String getTaskDescription() {
         return taskDescription;
     }
@@ -37,12 +35,10 @@ public class Task implements Serializable {
     public LocalDate getDate() {
         return date;
     }
-
-    public Date getDateCompleted() {
+    public LocalDate getDateCompleted() {
         return dateCompleted;
     }
-
-    public void setDateCompleted(Date dateCompleted) {
+    public void setDateCompleted(LocalDate dateCompleted) {
         this.dateCompleted = dateCompleted;
     }
 
